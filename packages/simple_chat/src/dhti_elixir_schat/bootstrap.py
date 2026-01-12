@@ -12,12 +12,16 @@ from langchain_openai import ChatOpenAI
 
 
 def bootstrap():
-    di["fhir_access_token"] = os.environ.get("FHIR_ACCESS_TOKEN", "YWRtaW46QWRtaW4xMjM=")  # admin:Admin123 in base64
-    di["fhir_base_url"] = os.environ.get("FHIR_BASE_URL", "http://backend:8080/openmrs/ws/fhir2/R4")
+    di["fhir_access_token"] = os.environ.get(
+        "FHIR_ACCESS_TOKEN", "YWRtaW46QWRtaW4xMjM="
+    )  # admin:Admin123 in base64
+    di["fhir_base_url"] = os.environ.get(
+        "FHIR_BASE_URL", "http://backend:8080/openmrs/ws/fhir2/R4"
+    )
     # Check if google api key is set in the environment
     if os.environ.get("GOOGLE_API_KEY"):
         llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-    # Check id openai api key is set in the environment
+    # Check if openai api key is set in the environment
     elif os.environ.get("OPENAI_API_KEY"):
         llm = ChatOpenAI(model="gpt-4o", temperature=0)
     else:
