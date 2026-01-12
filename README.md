@@ -8,7 +8,7 @@
 [![Downloads](https://img.shields.io/pypi/dm/dhti-elixir)](https://pypi.org/project/dhti-elixir)
 [![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/dhti-elixir/)
 
-This is a template repository for Python projects that use uv for their dependency management.
+This is a schat repository for Python projects that use uv for their dependency management.
 
 - **Github repository**: <https://github.com/dermatologist/dhti-elixir/>
 - **Documentation** <https://dermatologist.github.io/dhti-elixir/>

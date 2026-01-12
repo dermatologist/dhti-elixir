@@ -1,18 +1,19 @@
 import logging
-from typing_extensions import override
-from fhiry import FlattenFhir
+
 from dhti_elixir_base import BaseChain, get_di
 from dhti_elixir_base.cds_hook.generate_cards import get_card
 from dhti_elixir_base.cds_hook.request_parser import get_context
 from dhti_elixir_base.fhir.fhir_search import DhtiFhirSearch
+from fhiry import FlattenFhir
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from typing_extensions import override
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class DhtiChain(BaseChain):
 
+class DhtiChain(BaseChain):
 
     def print_log(self, message):
         logger.info(message)
@@ -20,10 +21,12 @@ class DhtiChain(BaseChain):
 
     def fhir_path_process(self, context: str):
         try:
-            return str(DhtiFhirSearch().get_conditions_for_patient(
+            return str(
+                DhtiFhirSearch().get_conditions_for_patient(
                     context,
-                    fhirpath="Bundle.entry.resource.ofType(Condition).code.coding.code.first()", # Get first condition code
-                ))
+                    fhirpath="Bundle.entry.resource.ofType(Condition).code.coding.code.first()",  # Get first condition code
+                )
+            )
         except Exception as e:
             self.print_log(f"Error in fhir_path_process: {e}")
             return "Demo working, but FHIR search failed."
@@ -45,7 +48,7 @@ class DhtiChain(BaseChain):
             RunnablePassthrough()
             | get_context
             | self.fhir_everything
-            | get_di("template_main_llm")  # type: ignore
+            | get_di("schat_main_llm")  # type: ignore
             | StrOutputParser()
             | get_card
         )
