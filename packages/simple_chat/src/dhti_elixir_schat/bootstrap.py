@@ -45,7 +45,7 @@ def bootstrap():
         "and a response from a medical knowledge agent: {agent_response}, "
         "answer the question: {query} briefly and accurately."
     )
-    di["cds_hook_discovery"] = {
+    di["dhti_elixir_schat_cds_hook_discovery"] = {
         "services": [
             {
                 "id": "dhti-service",
