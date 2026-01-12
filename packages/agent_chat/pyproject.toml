@@ -1,5 +1,5 @@
 [project]
-name = "dhti-elixir-schat"
+name = "dhti-elixir-achat"
 dynamic = ["version"]                                                       # Remove static version and add this line
 description = "DHTI Elixir Template"
 authors = [{ name = "Bell Eapen", email = "github_public@gulfdoctor.net" }]

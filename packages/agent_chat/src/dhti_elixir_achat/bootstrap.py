@@ -1,26 +1,32 @@
 # Define default variables here
 # Can be overridden by the user in the server
 
-from kink import di
 import os
+
+from kink import di
+from langchain.chat_models import init_chat_model
+from langchain_community.llms.fake import FakeListLLM
+from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
-from langchain_community.llms.fake import FakeListLLM
-from langchain.chat_models import init_chat_model
-from langchain_core.prompts import PromptTemplate
+
 
 def bootstrap():
-    di["fhir_access_token"] = "YWRtaW46QWRtaW4xMjM="  # admin:Admin123 in base64
-    di["fhir_base_url"] = "http://backend:8080/openmrs/ws/fhir2/R4"
+    di["fhir_access_token"] = os.environ.get(
+        "FHIR_ACCESS_TOKEN", "YWRtaW46QWRtaW4xMjM="
+    )  # admin:Admin123 in base64
+    di["fhir_base_url"] = os.environ.get(
+        "FHIR_BASE_URL", "http://backend:8080/openmrs/ws/fhir2/R4"
+    )
     # Check if google api key is set in the environment
     if os.environ.get("GOOGLE_API_KEY"):
         llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-    # Check id openai api key is set in the environment
+    # Check if openai api key is set in the environment
     elif os.environ.get("OPENAI_API_KEY"):
         llm = ChatOpenAI(model="gpt-4o", temperature=0)
     else:
         llm = FakeListLLM(responses=["I am a fake LLM", "I don't know"])
-    di["template_main_llm"] = llm
+    di["achat_main_llm"] = llm
 
     model = init_chat_model(
         model="nex-agi/deepseek-v3.1-nex-n1:free",
@@ -33,10 +39,10 @@ def bootstrap():
     di["main_prompt"] = PromptTemplate.from_template(
         "Summarize the following in 100 words: {input}"
     )
-    di["template_main_prompt"] = PromptTemplate.from_template(
-        "You are a medical assistant. " \
-        "Using the following patient information:{fhir_context}, " \
-        "and a response from a medical knowledge agent: {agent_response}, " \
+    di["achat_main_prompt"] = PromptTemplate.from_template(
+        "You are a medical assistant. "
+        "Using the following patient information:{fhir_context}, "
+        "and a response from a medical knowledge agent: {agent_response}, "
         "answer the question: {query} briefly and accurately."
     )
     di["cds_hook_discovery"] = {

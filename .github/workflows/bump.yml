@@ -7,24 +7,23 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
-    - name: Checkout Latest Commit
-      uses: actions/checkout@v5
+      - name: Checkout Latest Commit
+        uses: actions/checkout@v6
 
-    - name: "✏️ Generate release changelog"
-      uses: janheinrichmerker/action-github-changelog-generator@v2.4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        user: dermatologist
-        maxIssues: 15
-        httpCache: true
+      - name: "✏️ Generate release changelog"
+        uses: janheinrichmerker/action-github-changelog-generator@v2.4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          user: dermatologist
+          maxIssues: 15
+          httpCache: true
 
-    - name: Commit changes
-      uses: EndBug/add-and-commit@v9
-      with:
-        default_author: github_actions
-        add: '*.md'
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          add: "*.md"

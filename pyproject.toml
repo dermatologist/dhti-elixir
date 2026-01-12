@@ -1,7 +1,7 @@
 [project]
 name = "dhti-elixir"
 dynamic = ["version"]
-description = "This is a template repository for Python projects that use uv for their dependency management."
+description = "This is a schat repository for Python projects that use uv for their dependency management."
 authors = [{ name = "Bell Eapen", email = "github_public@gulfdoctor.net" }]
 readme = "README.md"
 keywords = ['python']
@@ -20,9 +20,7 @@ classifiers = [
 ]
 
 
-dependencies = [
-  "dhti-elixir-base"
-]
+dependencies = ["dhti-elixir-base"]
 
 
 [project.urls]
@@ -61,13 +59,7 @@ explicit = true
 fallback-version = "0.1.0"
 
 [tool.uv.build-backend]
-source-exclude = [
-  "tests/*",
-  "examples/*",
-  "docs/*",
-  "notes/*",
-  "notebooks/*"
-]
+source-exclude = ["tests/*", "examples/*", "docs/*", "notes/*", "notebooks/*"]
 
 #[project.scripts]
 #dhti-elixir = "dhti-elixir.main:cli"
@@ -123,7 +115,8 @@ select = [
     # mccabe
     "C90",
     # pycodestyle
-    "E", "W",
+    "E",
+    "W",
     # pyflakes
     "F",
     # pygrep-hooks
@@ -162,4 +155,4 @@ branch = true
 source = ["src"]
 
 [tool.uv.workspace]
-members = [ "packages/*" ]
+members = ["packages/*"]

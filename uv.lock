@@ -12,7 +12,7 @@ resolution-markers = [
 [manifest]
 members = [
     "dhti-elixir",
-    "dhti-elixir-template",
+    "dhti-elixir-schat",
 ]
 
 [[package]]
@@ -785,7 +785,7 @@ wheels = [
 ]
 
 [[package]]
-name = "dhti-elixir-template"
+name = "dhti-elixir-schat"
 source = { virtual = "packages/simple_chat" }
 dependencies = [
     { name = "dhti-elixir-base" },
