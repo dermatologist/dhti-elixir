@@ -8,20 +8,19 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
       max-parallel: 4
       matrix:
-        python-version: ['3.11']
+        python-version: ["3.11"]
 
     steps:
-    - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-    - name: Set up the environment
-      uses: ./.github/actions/setup-python-env
+      - name: Set up the environment
+        uses: ./.github/actions/setup-python-env
 
-    - name: Test with tox
-      run: |
-        uv run tox
+      - name: Test with tox
+        run: |
+          uv run tox
