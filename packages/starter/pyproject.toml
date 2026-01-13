@@ -1,7 +1,7 @@
 [project]
-name = "dhti-elixir-schat"
+name = "dhti-elixir-starter"
 dynamic = ["version"]                                                       # Remove static version and add this line
-description = "DHTI Elixir Template"
+description = "DHTI Elixir Starter Template"
 authors = [{ name = "Bell Eapen", email = "github_public@gulfdoctor.net" }]
 
 dependencies = [

@@ -26,7 +26,7 @@ def bootstrap():
         llm = ChatOpenAI(model="gpt-4o", temperature=0)
     else:
         llm = FakeListLLM(responses=["I am a fake LLM", "I don't know"])
-    di["achat_main_llm"] = llm
+    di["starter_main_llm"] = llm
 
     model = init_chat_model(
         model="nex-agi/deepseek-v3.1-nex-n1:free",
@@ -39,13 +39,13 @@ def bootstrap():
     di["main_prompt"] = PromptTemplate.from_template(
         "Summarize the following in 100 words: {input}"
     )
-    di["achat_main_prompt"] = PromptTemplate.from_template(
+    di["starter_main_prompt"] = PromptTemplate.from_template(
         "You are a medical assistant. "
         "Using the following patient information:{fhir_context}, "
         "and a response from a medical knowledge agent: {agent_response}, "
         "answer the question: {query} briefly and accurately."
     )
-    di["dhti_elixir_achat_cds_hook_discovery"] = {
+    di["dhti_elixir_starter_cds_hook_discovery"] = {
         "services": [
             {
                 "id": "dhti-service",
