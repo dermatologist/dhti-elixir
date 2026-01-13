@@ -7,6 +7,11 @@ def pytest_configure(config):
     print("Bootstrapping...")
     bootstrap()
 
+@pytest.fixture
+def starter_chain():
+    from packages.starter.src.dhti_elixir_starter.chain import DhtiChain
+    return DhtiChain().chain
+
 
 @pytest.fixture
 def simple_chain():
