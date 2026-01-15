@@ -1,6 +1,4 @@
-# dhti-elixir
-
-# OpenMRS ESM [DHTI](https://github.com/dermatologist/dhti)
+# [DHTI Elixirs](https://github.com/dermatologist/dhti)
 
 <p align="center">
   <img src="https://github.com/dermatologist/dhti/blob/develop/notes/dhti-logo.jpg" />
@@ -8,7 +6,7 @@
 
 - 🚀 *What might healing become if we dared to distill possibility itself!*
 
-This repository contains the user contributed elixirs for the [DHTI](https://github.com/dermatologist/dhti)
+### This repository contains the user contributed elixirs for [DHTI](https://github.com/dermatologist/dhti). [How to contribute elixirs?](CONTRIBUTING.md)
 
 ## Starting with dhti (Example)
 
@@ -28,7 +26,7 @@ If you find this project useful, give us a star. It helps others discover the pr
 
 ## Contributing
 
-Please see the [Contributing Guide](CONTRIBUTING.md) for information about contributing to this project. WIP
+Please see the [Contributing Guide](CONTRIBUTING.md) for information about contributing to this project.
 
 ## Contributors
 
