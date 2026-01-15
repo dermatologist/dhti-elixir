@@ -6,8 +6,13 @@
 * (**Important**): Submit pull requests to the *develop* branch or *feature/* branches
 * Use *GitHub Issues* for feature requests and bug reports. Include as much information as possible while reporting bugs.
 
+## Contributing packages
 
-## Contributing (Step-by-step)
+* Use [DHTI](https://github.com/dermatologist/dhti) to generate a Elixir package template. (`npx dhti-cli elixir init -n <package_name>`)
+* If you are vibe-coding, use [DHTI's](https://github.com/dermatologist/dhti) elixir-generator skill.
+* Submit a pull request to this repository with your new package added under the `packages/` directory.
+
+## Fixing bugs (Step-by-step)
 
 1. [Fork the repo](http://help.github.com/fork-a-repo) and clone it to your local computer, and set up the upstream remote:
 
