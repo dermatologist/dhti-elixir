@@ -9,6 +9,7 @@ dependencies = [
     "fhiry>=5.2.1",
     "langchain-google-genai",
     "langchain-openai",
+    "redis",
 ]
 
 [dependency-groups]

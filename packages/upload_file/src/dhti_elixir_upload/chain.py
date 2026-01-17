@@ -1,3 +1,19 @@
+"""
+Copyright 2024 Bell Eapen
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import base64
 import logging
 
@@ -8,52 +24,32 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langserve import CustomUserType
 from pydantic import Field
 from typing_extensions import override
-
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=get_di("upload_chunk_size"),
-    chunk_overlap=get_di("upload_chunk_overlap"),
-    length_function=len,
-    is_separator_regex=False,
-)
-
-
-# ATTENTION: Inherit from CustomUserType instead of BaseModel otherwise
-#            the server will decode it into a dict instead of a pydantic model.
-class FileProcessingRequest(CustomUserType):
-    """Request including a base64 encoded file."""
-
-    file: str = Field(..., extra={"widget": {"type": "base64file"}}) # type: ignore
-
-
-
-def process_file(request: FileProcessingRequest) -> str:
-    """Extract the text from the first page of the PDF."""
-    content = base64.b64decode(request.file.encode("utf-8"))
-    blob = Blob(data=content)
-    return get_di("process_file_function")(blob)  # type: ignore
-
-
-_chain = (RunnableLambda(process_file).with_types(input_type=FileProcessingRequest),)
-upload = _chain[0]
-
-
+from typing import Annotated
+from fastapi import UploadFile, File
+from pydantic import BaseModel
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 class DhtiChain(BaseChain):
-
+    """Chain for processing uploaded PDF files."""
     @override
-    class ChainInput(FileProcessingRequest): # type: ignore
-        """
-        Input model for BaseChain.
+    class ChainInput(BaseModel):  # type: ignore
+        """Input model for BaseChain."""
+        file: str = Field(..., extra={"widget": {"type": "base64file"}}) # type: ignore
 
-        """
 
-        pass
+    def process_file(self, input):
+        """Extract the text from the PDF file and process it."""
+        content = base64.b64decode(input["file"].encode("utf-8"))
+        logger.info(
+            "Decoded file content from base64." + str(len(content)) + " bytes received."
+        )
+        blob = Blob(data=content)
+        return get_di("process_file_function")(blob)  # type: ignore
 
     @property
     @override
     def chain(self):  # type: ignore
-        _chain = RunnablePassthrough() | upload
-        return _chain.with_types(input_type=self.input_type)
+        """Return the processing chain."""
+        _chain = RunnablePassthrough() | self.process_file
+        return _chain.with_types(input_type=self.ChainInput)  # type: ignore

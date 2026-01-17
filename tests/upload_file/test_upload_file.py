@@ -1,25 +1,34 @@
+"""
+Tests for the upload_file chain.
+"""
+
 import base64
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 from kink import di
-
-from packages.upload_file.src.dhti_elixir_upload.chain import (
-    DhtiChain,
-    FileProcessingRequest,
-)
 
 
 @pytest.fixture
 def upload_chain():
     """Create the upload_file chain fixture."""
+    from packages.upload_file.src.dhti_elixir_upload.chain import DhtiChain
+
     return DhtiChain().chain
+
+
+@pytest.fixture
+def file_processing_request():
+    """Create a FileProcessingRequest fixture."""
+    from packages.upload_file.src.dhti_elixir_upload.chain import FileProcessingRequest
+
+    return FileProcessingRequest
 
 
 @pytest.fixture
 def sample_pdf_bytes():
     """Create a minimal PDF for testing."""
-    pdf_content = b"""%PDF-1.4
+    return b"""%PDF-1.4
 1 0 obj
 << /Type /Catalog /Pages 2 0 R >>
 endobj
@@ -55,7 +64,6 @@ trailer
 startxref
 481
 %%EOF"""
-    return pdf_content
 
 
 def test_chain_creation(upload_chain):
@@ -64,23 +72,17 @@ def test_chain_creation(upload_chain):
     assert hasattr(upload_chain, "invoke")
 
 
-def test_chain_invoke_with_pdf(sample_pdf_bytes, capsys):
+def test_chain_invoke_with_pdf(
+    upload_chain, file_processing_request, sample_pdf_bytes, capsys
+):
     """Test the upload chain with a valid PDF file."""
-    # Encode the PDF as base64
     encoded_pdf = base64.b64encode(sample_pdf_bytes).decode("utf-8")
+    request = file_processing_request(file=encoded_pdf)
 
-    # Create a FileProcessingRequest object
-    request = FileProcessingRequest(file=encoded_pdf)
-
-    # Mock the process_file_function
     mock_process_file = MagicMock(return_value="Uploaded 5 chunks to the vector store.")
     di["process_file_function"] = mock_process_file
 
-    # Invoke the chain with the request object
-    chain = DhtiChain().chain
-    result = chain.invoke(input=request)  # type: ignore
-
-    # Verify the result
+    result = upload_chain.invoke(input=request)  # type: ignore
     print(result)
     captured = capsys.readouterr()
     assert (
@@ -88,61 +90,54 @@ def test_chain_invoke_with_pdf(sample_pdf_bytes, capsys):
     )
 
 
-def test_chain_invoke_with_invalid_base64():
+def test_chain_invoke_with_invalid_base64(upload_chain, file_processing_request):
     """Test the chain with invalid base64 data."""
-    chain = DhtiChain().chain
-
-    # Try to create with invalid base64 - this should fail at request creation
     with pytest.raises(Exception):
-        invalid_request = FileProcessingRequest(file="not-valid-base64!")
-        chain.invoke(input=invalid_request)  # type: ignore
+        invalid_request = file_processing_request(file="not-valid-base64!")
+        upload_chain.invoke(input=invalid_request)  # type: ignore
 
 
-def test_chain_input_type():
+def test_chain_input_type(upload_chain, file_processing_request):
     """Test that the chain has the correct input type."""
-    # Verify the chain can be invoked with FileProcessingRequest data
     encoded_pdf = base64.b64encode(b"%PDF-1.4 test").decode("utf-8")
-    request = FileProcessingRequest(file=encoded_pdf)
+    request = file_processing_request(file=encoded_pdf)
 
     mock_process_file = MagicMock(return_value="Success")
     di["process_file_function"] = mock_process_file
 
-    chain = DhtiChain().chain
-    result = chain.invoke(input=request)  # type: ignore
+    result = upload_chain.invoke(input=request)  # type: ignore
     assert result == "Success"
 
 
-def test_chain_processes_through_upload_runnable(sample_pdf_bytes):
+def test_chain_processes_through_upload_runnable(
+    upload_chain, file_processing_request, sample_pdf_bytes
+):
     """Test that the chain correctly processes data through the upload runnable."""
     encoded_pdf = base64.b64encode(sample_pdf_bytes).decode("utf-8")
-    request = FileProcessingRequest(file=encoded_pdf)
+    request = file_processing_request(file=encoded_pdf)
 
-    # Mock the process_file_function to verify it's called
     mock_process_file = MagicMock(return_value="Processed successfully")
     di["process_file_function"] = mock_process_file
 
-    chain = DhtiChain().chain
-    result = chain.invoke(input=request)  # type: ignore
+    result = upload_chain.invoke(input=request)  # type: ignore
 
-    # Verify the mock was called
     assert mock_process_file.called
     assert result == "Processed successfully"
 
 
-def test_chain_with_actual_document_store(sample_pdf_bytes):
+def test_chain_with_actual_document_store(
+    upload_chain, file_processing_request, sample_pdf_bytes
+):
     """Test the chain with the real document_store function from bootstrap."""
     encoded_pdf = base64.b64encode(sample_pdf_bytes).decode("utf-8")
-    request = FileProcessingRequest(file=encoded_pdf)
+    request = file_processing_request(file=encoded_pdf)
 
-    # Reset the DI container to get the real document_store from bootstrap
-    # by removing any mocks
+    # Reset DI to get real document_store
     from tests.bootstrap import bootstrap
 
     bootstrap()
 
-    chain = DhtiChain().chain
-    result = chain.invoke(input=request)  # type: ignore
+    result = upload_chain.invoke(input=request)  # type: ignore
 
-    # The result should be a success message about uploaded chunks
     assert "Uploaded" in result
     assert "chunks" in result
