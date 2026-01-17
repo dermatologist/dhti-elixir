@@ -58,7 +58,7 @@ startxref
 def sample_file_request(sample_pdf_bytes):
     """Create a FileProcessingRequest with base64 encoded PDF."""
     encoded_pdf = base64.b64encode(sample_pdf_bytes).decode("utf-8")
-    return FileProcessingRequest(file=encoded_pdf)
+    return FileProcessingRequest(file=encoded_pdf) # type: ignore
 
 
 def test_file_processing_request_creation(sample_file_request):
