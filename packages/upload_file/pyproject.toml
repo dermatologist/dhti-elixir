@@ -1,7 +1,7 @@
 [project]
-name = "dhti-elixir-starter"
+name = "dhti-elixir-upload"
 dynamic = ["version"]                                                       # Remove static version and add this line
-description = "DHTI Elixir Starter Template"
+description = "DHTI Elixir File Upload Package"
 authors = [{ name = "Bell Eapen", email = "github_public@gulfdoctor.net" }]
 
 dependencies = [

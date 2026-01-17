@@ -19,13 +19,9 @@ import logging
 
 from dhti_elixir_base import BaseChain, get_di
 from langchain_core.document_loaders import Blob
-from langchain_core.runnables import RunnableLambda, RunnablePassthrough
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langserve import CustomUserType
+from langchain_core.runnables import RunnablePassthrough
 from pydantic import Field
 from typing_extensions import override
-from typing import Annotated
-from fastapi import UploadFile, File
 from pydantic import BaseModel
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
