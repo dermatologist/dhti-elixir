@@ -4,8 +4,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 from kink import di
 
-from packages.upload_file.src.dhti_elixir_upload.chain import DhtiChain
-from packages.utils.src.dhti_elixir_utils.upload import FileProcessingRequest
+from packages.upload_file.src.dhti_elixir_upload.chain import (
+    DhtiChain,
+    FileProcessingRequest,
+)
 
 
 @pytest.fixture
