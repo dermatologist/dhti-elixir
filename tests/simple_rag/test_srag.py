@@ -1,11 +1,18 @@
-import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../packages/simple_rag/src")))
+import sys
+
+sys.path.append(
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../packages/simple_rag/src")
+    )
+)
 
 from unittest.mock import MagicMock, patch
+
 from dhti_elixir_srag.chain import DhtiChain
 from kink import di
 from langchain_community.llms.fake import FakeListLLM
+
 
 def test_srag_chain():
     # Mock Redis retriever
@@ -25,4 +32,5 @@ def test_srag_chain():
     mock_retriever.assert_called_with("What is in the documents?")
 
     # Verify response
-    assert response == "Generated Answer"
+    assert "cards" in response
+    assert response["cards"][0]["summary"] == "Generated Answer"
