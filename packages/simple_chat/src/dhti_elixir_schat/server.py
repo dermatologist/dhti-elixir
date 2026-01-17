@@ -64,8 +64,8 @@ async def read_root():
 
 
 try:
-    from langfuse import Langfuse
-    from langfuse.callback import CallbackHandler
+    from langfuse import Langfuse # type: ignore
+    from langfuse.callback import CallbackHandler # type: ignore
 
     langfuse_handler = CallbackHandler()
     langfuse_handler.auth_check()

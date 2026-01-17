@@ -22,7 +22,8 @@ text_splitter = RecursiveCharacterTextSplitter(
 class FileProcessingRequest(CustomUserType):
     """Request including a base64 encoded file."""
 
-    file: str = Field(..., json_schema_extra={"widget": {"type": "base64file"}})
+    file: str = Field(..., extra={"widget": {"type": "base64file"}}) # type: ignore
+
 
 
 def process_file(request: FileProcessingRequest) -> str:

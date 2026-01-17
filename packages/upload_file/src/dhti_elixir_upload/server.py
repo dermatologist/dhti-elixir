@@ -5,6 +5,8 @@ from dhti_elixir_base.cds_hook.routes import add_services, add_invokes
 from fastapi.middleware.cors import CORSMiddleware
 from mcp.server.fastmcp import FastMCP
 mcp_server = FastMCP(name="dhti-mcp-server")
+from pydantic import BaseModel, ConfigDict
+
 
 # ! DO NOT REMOVE THE COMMENT BELOW
 # DHTI_CLI_IMPORT
@@ -51,10 +53,9 @@ async def read_root():
     return {"message": "Hello from DHTI!"}
 
 
-
 try:
-    from langfuse import Langfuse
-    from langfuse.callback import CallbackHandler
+    from langfuse import Langfuse # type: ignore
+    from langfuse.callback import CallbackHandler # type: ignore
 
     langfuse_handler = CallbackHandler()
     langfuse_handler.auth_check()
@@ -80,4 +81,3 @@ add_services(app, path="/langserve/dhti_elixir")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
-
