@@ -17,7 +17,6 @@ limitations under the License.
 import base64
 
 from dhti_elixir_base import get_di
-from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
 from langchain_core.document_loaders import Blob
 from langchain_core.runnables import RunnableLambda
 from langchain_text_splitters import RecursiveCharacterTextSplitter
