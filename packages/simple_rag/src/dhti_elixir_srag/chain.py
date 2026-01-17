@@ -30,7 +30,7 @@ class DhtiChain(BaseChain):
     def chain(self):  # type: ignore
         _chain = (
             {"context": self.retrieve_context, "input": RunnablePassthrough() | get_context}
-            | get_di("srag_main_prompt")
+            | get_di("srag_main_prompt") # type: ignore
             | get_di("srag_main_llm")
             | StrOutputParser()
             | get_card
