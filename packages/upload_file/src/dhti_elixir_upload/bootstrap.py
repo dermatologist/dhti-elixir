@@ -120,3 +120,31 @@ def bootstrap():
 
     di["process_file_function"] = document_store
     di["read_vectorstore_function"] = read_vectorstore
+
+    di["dhti_elixir_upload_cds_hook_discovery"] = {
+        "services": [
+            {
+                "id": "dhti-service",
+                "hook": "order-select",
+                "title": "MyOrg Order Assistant",
+                "description": "Provides suggestions and actions for selected draft orders, including handling CommunicationRequest resources.",
+                "prefetch": {
+                    "patient": "Patient/{{context.patientId}}",
+                    "draftOrders": "Bundle?patient={{context.patientId}}&status=draft",
+                },
+                "scopes": [
+                    "launch",
+                    "patient/Patient.read",
+                    "user/Practitioner.read",
+                    "patient/CommunicationRequest.read",
+                ],
+                "metadata": {
+                    "author": "MyOrg CDS Team",
+                    "version": "1.0.0",
+                    "supportedResources": [
+                        "CommunicationRequest",
+                    ],
+                },
+            }
+        ]
+    }

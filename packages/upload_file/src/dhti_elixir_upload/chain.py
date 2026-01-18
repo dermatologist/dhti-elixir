@@ -33,12 +33,16 @@ class DhtiChain(BaseChain):
     @override
     class ChainInput(BaseModel):  # type: ignore
         """Input model for BaseChain."""
-        file: str = Field(..., extra={"widget": {"type": "base64file"}}) # type: ignore
+        input: str = Field(..., extra={"widget": {"type": "base64file"}}) # type: ignore
 
 
     def process_file(self, input):
         """Extract the text from the PDF file and process it."""
-        content = base64.b64decode(input["file"].encode("utf-8"))
+        try:
+            content = base64.b64decode(input.encode("utf-8"))
+        except Exception as e:
+            logger.error("Trying input['input']: %s", str(e))
+            content = base64.b64decode(input["input"].encode("utf-8"))
         logger.info(
             "Decoded file content from base64." + str(len(content)) + " bytes received."
         )
