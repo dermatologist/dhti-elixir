@@ -8,6 +8,7 @@ from langchain.chat_models import init_chat_model
 from langchain_community.llms.fake import FakeListLLM
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores import Redis
 from langchain_community.embeddings import FakeEmbeddings
@@ -24,7 +25,9 @@ def bootstrap():
     # Check if google api key is set in the environment
     if os.environ.get("GOOGLE_API_KEY"):
         llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-        embedding_model = ChatGoogleGenerativeAI(model="embed-gecko-001")
+        embedding_model = GoogleGenerativeAIEmbeddings(
+            model="models/gemini-embedding-001"
+        )
     # Check if openai api key is set in the environment
     elif os.environ.get("OPENAI_API_KEY"):
         llm = ChatOpenAI(model="gpt-4o", temperature=0)
