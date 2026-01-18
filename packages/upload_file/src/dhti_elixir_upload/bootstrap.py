@@ -11,6 +11,7 @@ from langchain_community.embeddings import FakeEmbeddings
 from langchain_community.llms.fake import FakeListLLM
 from langchain_community.vectorstores import Redis
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -19,7 +20,9 @@ def bootstrap():
     # Check if google api key is set in the environment
     if os.environ.get("GOOGLE_API_KEY"):
         llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-        embedding_model = ChatGoogleGenerativeAI(model="embed-gecko-001")
+        embedding_model = GoogleGenerativeAIEmbeddings(
+            model="models/gemini-embedding-001"
+        )
     # Check if openai api key is set in the environment
     elif os.environ.get("OPENAI_API_KEY"):
         llm = ChatOpenAI(model="gpt-4o", temperature=0)
@@ -76,7 +79,7 @@ def bootstrap():
             embedding=di["embedding_model"],
             index_name="dhti_elixir_upload_file",
             index_schema=index_schema,
-            redis_url=os.environ.get("REDIS_URL", "redis://redis:6379/0"),
+            redis_url=os.environ.get("REDIS_URL", "redis://localhost:6379"), # langserve container has host network. so use localhost
         )
         assert db is not None
         return True
@@ -86,7 +89,9 @@ def bootstrap():
             embedding=di["embedding_model"],
             index_name="dhti_elixir_upload_file",
             schema=index_schema,
-            redis_url=os.environ.get("REDIS_URL", "redis://redis:6379"),
+            redis_url=os.environ.get(
+                "REDIS_URL", "redis://localhost:6379"
+            ),  # langserve container has host network. so use localhost
         )
 
     text_splitter = RecursiveCharacterTextSplitter(
