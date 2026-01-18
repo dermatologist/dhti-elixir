@@ -5,7 +5,7 @@ description = "A simple RAG dhti-elixir package"
 authors = [{ name = "Bell Eapen", email = "belleapen@gmail.com" }]
 
 dependencies = [
-    "dhti-elixir-base>=1.4.0",
+    "dhti-elixir-base>=1.4.1",
     "fhiry>=5.2.1",
     "langchain-google-genai",
     "langchain-openai",

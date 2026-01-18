@@ -5,7 +5,7 @@ description = "DHTI Elixir Template"
 authors = [{ name = "Bell Eapen", email = "github_public@gulfdoctor.net" }]
 
 dependencies = [
-    "dhti-elixir-base>=1.4.0",
+    "dhti-elixir-base>=1.4.1",
     "fhiry>=5.2.1",
     "langchain-google-genai",
     "langchain-openai",
