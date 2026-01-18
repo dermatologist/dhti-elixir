@@ -18,6 +18,8 @@ import base64
 import logging
 
 from dhti_elixir_base import BaseChain, get_di
+from dhti_elixir_base.cds_hook.generate_cards import get_card
+from dhti_elixir_base.cds_hook.request_parser import get_context
 from langchain_core.document_loaders import Blob
 from langchain_core.runnables import RunnablePassthrough
 from pydantic import Field
@@ -47,5 +49,5 @@ class DhtiChain(BaseChain):
     @override
     def chain(self):  # type: ignore
         """Return the processing chain."""
-        _chain = RunnablePassthrough() | self.process_file
+        _chain = RunnablePassthrough() | get_context | self.process_file | get_card
         return _chain.with_types(input_type=self.ChainInput)  # type: ignore
