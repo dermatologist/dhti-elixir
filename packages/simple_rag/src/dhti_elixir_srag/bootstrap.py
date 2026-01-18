@@ -48,14 +48,43 @@ def bootstrap():
 
     di["function_llm"] = model
 
-    schema_path = os.path.join(os.path.dirname(__file__), "redis_schema.yaml")
+    index_schema = {
+        "numeric": [{"name": "year", "no_index": False, "sortable": False}],
+        "text": [
+            {
+                "name": "authors",
+                "no_index": False,
+                "no_stem": False,
+                "sortable": False,
+                "weight": 0.5,
+                "withsuffixtrie": False,
+            },
+            {
+                "name": "content",
+                "no_index": False,
+                "no_stem": False,
+                "sortable": False,
+                "weight": 1,
+                "withsuffixtrie": False,
+            },
+        ],
+        "vector": [
+            {
+                "algorithm": "FLAT",
+                "datatype": "FLOAT32",
+                "dims": 384,
+                "distance_metric": "COSINE",
+                "name": "content_vector",
+            }
+        ],
+    }
 
     def read_vectorstore():
         return Redis.from_existing_index(
             embedding=di["embedding_model"],
             index_name="dhti_elixir_upload_file",
-            schema=schema_path,
-            redis_url=os.environ.get("REDIS_URL", "redis://redis:6379"),
+            schema=index_schema,
+            redis_url=os.environ.get("REDIS_URL", "redis://localhost:6379"),
         )
 
     def retrieve_documents(query):
