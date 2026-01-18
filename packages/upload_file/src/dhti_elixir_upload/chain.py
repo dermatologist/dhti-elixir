@@ -43,7 +43,8 @@ class DhtiChain(BaseChain):
             "Decoded file content from base64." + str(len(content)) + " bytes received."
         )
         blob = Blob(data=content)
-        return get_di("process_file_function")(blob)  # type: ignore
+        get_di("process_file_function")(blob)  # type: ignore
+        return "File processed successfully."
 
     @property
     @override
