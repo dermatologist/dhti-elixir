@@ -2,17 +2,17 @@
 # Can be overridden by the user in the server
 
 import os
+from datetime import datetime
 
 from kink import di
 from langchain.chat_models import init_chat_model
+from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
 from langchain_community.embeddings import FakeEmbeddings
 from langchain_community.llms.fake import FakeListLLM
 from langchain_community.vectorstores import Redis
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
-from datetime import datetime
 
 
 def bootstrap():
@@ -37,7 +37,37 @@ def bootstrap():
         base_url="https://openrouter.ai/api/v1",
         api_key=os.environ.get("OPENROUTER_API_KEY"),
     )
-    schema_path = os.path.join(os.path.dirname(__file__), "redis_schema.yaml")
+
+    index_schema = {
+        "numeric": [{"name": "year", "no_index": False, "sortable": False}],
+        "text": [
+            {
+                "name": "authors",
+                "no_index": False,
+                "no_stem": False,
+                "sortable": False,
+                "weight": 0.5,
+                "withsuffixtrie": False,
+            },
+            {
+                "name": "content",
+                "no_index": False,
+                "no_stem": False,
+                "sortable": False,
+                "weight": 1,
+                "withsuffixtrie": False,
+            },
+        ],
+        "vector": [
+            {
+                "algorithm": "FLAT",
+                "datatype": "FLOAT32",
+                "dims": 384,
+                "distance_metric": "COSINE",
+                "name": "content_vector",
+            }
+        ],
+    }
 
     def create_vectorstore(docs):
         # Store in Redis
@@ -45,7 +75,7 @@ def bootstrap():
             documents=docs,
             embedding=di["embedding_model"],
             index_name="dhti_elixir_upload_file",
-            index_schema=schema_path,
+            index_schema=index_schema,
             redis_url=os.environ.get("REDIS_URL", "redis://redis:6379/0"),
         )
         assert db is not None
@@ -55,7 +85,7 @@ def bootstrap():
         return Redis.from_existing_index(
             embedding=di["embedding_model"],
             index_name="dhti_elixir_upload_file",
-            schema=schema_path,
+            schema=index_schema,
             redis_url=os.environ.get("REDIS_URL", "redis://redis:6379"),
         )
 
