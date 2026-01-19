@@ -44,7 +44,8 @@ class DhtiChain(BaseChain):
             logger.error("Trying input['input']: %s", str(e))
             content = base64.b64decode(input["input"].encode("utf-8"))
         logger.info(
-            "Decoded file content from base64." + str(len(content)) + " bytes received."
+            "Decoded file content from base64. %d bytes received.",
+            len(content),
         )
         blob = Blob(data=content)
         get_di("process_file_function")(blob)  # type: ignore
