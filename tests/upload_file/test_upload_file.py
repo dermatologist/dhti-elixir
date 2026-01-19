@@ -26,30 +26,30 @@ def chain():
 
 
 def test_chaininput_model_accepts_base64(chain, encoded_pdf):
-    model = chain.ChainInput(file=encoded_pdf)
-    assert model.file == encoded_pdf
+    model = chain.ChainInput(input=encoded_pdf)
+    assert model.input == encoded_pdf
 
 
 def test_process_file_calls_di_function(chain, encoded_pdf):
-    mock_func = MagicMock(return_value="mocked result")
+    mock_func = MagicMock()
     with patch(
         "packages.upload_file.src.dhti_elixir_upload.chain.get_di",
         return_value=mock_func,
     ):
-        result = chain.process_file({"file": encoded_pdf})
-        assert result == "mocked result"
+        result = chain.process_file(encoded_pdf)
+        assert result == "File processed successfully."
         assert mock_func.called
 
 
 def test_process_file_decodes_base64(chain, sample_pdf_bytes, encoded_pdf):
     with patch(
         "packages.upload_file.src.dhti_elixir_upload.chain.get_di",
-        return_value=lambda x: "ok",
+        return_value=lambda x: None,
     ) as mock_di:
         with patch(
             "packages.upload_file.src.dhti_elixir_upload.chain.Blob"
         ) as mock_blob:
-            chain.process_file({"file": encoded_pdf})
+            chain.process_file(encoded_pdf)
             mock_blob.assert_called_once()
             args, kwargs = mock_blob.call_args
             assert kwargs["data"] == sample_pdf_bytes
@@ -62,11 +62,14 @@ def test_chain_property_returns_runnable(chain):
 
 
 def test_chain_integration_with_mocked_process(chain, encoded_pdf):
-    mock_func = MagicMock(return_value="integration ok")
+    mock_func = MagicMock()
     with patch(
         "packages.upload_file.src.dhti_elixir_upload.chain.get_di",
         return_value=mock_func,
     ):
         chain_obj = chain.chain
-        result = chain_obj.invoke(input={"file": encoded_pdf})
-        assert result == "integration ok"
+        result = chain_obj.invoke(input={"input": encoded_pdf})
+        # The chain now returns a dict with a 'cards' key containing a summary
+        assert isinstance(result, dict)
+        assert "cards" in result
+        assert result["cards"][0]["summary"] == "File processed successfully."
