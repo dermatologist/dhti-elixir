@@ -6,24 +6,10 @@ from langserve import add_routes
 from mcp.server.fastmcp import FastMCP
 
 mcp_server = FastMCP(name="dhti-mcp-server")
-from pydantic import BaseModel, ConfigDict
-
-
-class ChainInputString(BaseModel):
-    """
-    Input model for BaseChain.
-
-    Attributes:
-        input (Any): The input string or CDSHookRequest object for the chain.
-    """
-
-    input: str
-    model_config = ConfigDict(extra="ignore", arbitrary_types_allowed=True)
-
-
 # ! DO NOT REMOVE THE COMMENT BELOW
 # DHTI_CLI_IMPORT
 from bootstrap import bootstrap as dhti_elixir_bootstrap
+from pydantic import BaseModel, ConfigDict
 
 dhti_elixir_bootstrap()
 import os
@@ -34,7 +20,6 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 from chain import DhtiChain as dhti_elixir_chain_class
 
-dhti_elixir_chain_class.input_type = ChainInputString
 dhti_elixir_chain = dhti_elixir_chain_class().get_chain_as_langchain_tool()
 dhti_elixir_mcp_tool = dhti_elixir_chain_class().get_chain_as_mcp_tool
 # 1. Define your MCP server

@@ -1,8 +1,8 @@
 [project]
-name = "dhti-elixir-achat"
-dynamic = ["version"]                                                       # Remove static version and add this line
-description = "DHTI Elixir Template"
-authors = [{ name = "Bell Eapen", email = "github_public@gulfdoctor.net" }]
+name = "dhti-elixir-srag"
+dynamic = ["version"]
+description = "A simple RAG dhti-elixir package"
+authors = [{ name = "Bell Eapen", email = "belleapen@gmail.com" }]
 
 dependencies = [
     "dhti-elixir-base>=1.4.1",

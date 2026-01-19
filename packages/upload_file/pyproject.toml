@@ -1,7 +1,7 @@
 [project]
-name = "dhti-elixir-achat"
+name = "dhti-elixir-upload"
 dynamic = ["version"]                                                       # Remove static version and add this line
-description = "DHTI Elixir Template"
+description = "DHTI Elixir File Upload Package"
 authors = [{ name = "Bell Eapen", email = "github_public@gulfdoctor.net" }]
 
 dependencies = [
@@ -9,6 +9,8 @@ dependencies = [
     "fhiry>=5.2.1",
     "langchain-google-genai",
     "langchain-openai",
+    "redis==5.1.0",
+    "langchain-redis",
 ]
 
 [dependency-groups]
