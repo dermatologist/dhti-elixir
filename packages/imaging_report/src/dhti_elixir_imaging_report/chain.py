@@ -4,9 +4,8 @@ import logging
 from dhti_elixir_base import BaseChain, get_di
 from dhti_elixir_base.cds_hook.generate_cards import get_card
 from dhti_elixir_base.cds_hook.request_parser import get_context
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from typing_extensions import override
 
@@ -92,7 +91,11 @@ class DhtiChain(BaseChain):
         image_url = parsed_data["image_url"]
         llm = get_di("imaging_report_main_llm")
         
+        # Get system prompt
+        system_prompt = get_di("imaging_report_system_prompt")
+        
         # Create multimodal message with image and text
+        # Use HumanMessage with structured content for vision models
         message = HumanMessage(
             content=[
                 {"type": "text", "text": text},
@@ -100,15 +103,13 @@ class DhtiChain(BaseChain):
             ]
         )
         
-        # Get system prompt
-        system_prompt = get_di("imaging_report_system_prompt")
-        
-        # Invoke the LLM with the multimodal message
+        # Create messages list with system prompt
         messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": message.content}
+            SystemMessage(content=system_prompt),
+            message
         ]
         
+        # Invoke the LLM with the multimodal messages
         result = llm.invoke(messages)
         
         # Extract content from result
