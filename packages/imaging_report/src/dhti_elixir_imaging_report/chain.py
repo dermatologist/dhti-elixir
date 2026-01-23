@@ -23,11 +23,17 @@ class DhtiChain(BaseChain):
         """
         Parse the input to determine if it's a string or JSON containing image_url and text.
         Returns a dict with 'mode' ('text' or 'vision'), 'text', and optionally 'image_url'.
+
+        context: Can be a string (from get_context), dict, or dict with "input" key
         """
         try:
             # Extract the actual input from the context
-            input_data = context.get("input", "")
-            
+            # context can be: string, dict with "input" key, or dict with vision data
+            if isinstance(context, dict):
+                input_data = context.get("input", "")
+            else:
+                input_data = context
+
             # If input is already a dict, use it directly
             if isinstance(input_data, dict):
                 parsed_input = input_data
@@ -38,42 +44,40 @@ class DhtiChain(BaseChain):
                 except (json.JSONDecodeError, TypeError):
                     # Not JSON, treat as plain text
                     self.print_log(f"Input is plain text: {input_data[:50]}...")
-                    return {
-                        "mode": "text",
-                        "text": input_data,
-                        "context": context
-                    }
-            
+                    return {"mode": "text", "text": input_data, "context": context}
+
             # Check if parsed_input has image_url field
             if isinstance(parsed_input, dict) and "image_url" in parsed_input:
                 image_url = parsed_input.get("image_url", "")
                 text = parsed_input.get("text", "")
-                
+
                 # Validate image_url (must be data URL or http(s) URL)
                 if image_url.startswith(("data:image/", "http://", "https://")):
-                    self.print_log(f"Input is vision mode with image_url: {image_url[:50]}...")
+                    self.print_log(
+                        f"Input is vision mode with image_url: {image_url[:50]}..."
+                    )
                     return {
                         "mode": "vision",
                         "text": text,
                         "image_url": image_url,
-                        "context": context
+                        "context": context,
                     }
-            
+
             # Default to text mode if no valid image_url found
             self.print_log("No valid image_url found, defaulting to text mode")
-            return {
-                "mode": "text",
-                "text": str(parsed_input),
-                "context": context
-            }
-            
+            return {"mode": "text", "text": str(parsed_input), "context": context}
+
         except Exception as e:
             self.print_log(f"Error parsing input: {e}")
-            return {
-                "mode": "text",
-                "text": str(context.get("input", "")),
-                "context": context
-            }
+            # Handle context safely
+            text = (
+                context
+                if isinstance(context, str)
+                else str(
+                    context.get("input", "") if isinstance(context, dict) else context
+                )
+            )
+            return {"mode": "text", "text": text, "context": context}
 
     def process_text_input(self, parsed_data):
         """Process plain text input using simple chat behavior."""
@@ -81,7 +85,7 @@ class DhtiChain(BaseChain):
             text = parsed_data["text"]
             llm = get_di("imaging_report_main_llm")
             prompt = get_di("imaging_report_text_prompt")
-            
+
             # Create a simple chain for text processing
             result = (prompt | llm | StrOutputParser()).invoke({"input": text})
             return result
@@ -95,10 +99,10 @@ class DhtiChain(BaseChain):
             text = parsed_data["text"]
             image_url = parsed_data["image_url"]
             llm = get_di("imaging_report_main_llm")
-            
+
             # Get system prompt
             system_prompt = get_di("imaging_report_system_prompt")
-            
+
             # Create multimodal message with image and text
             # Use HumanMessage with structured content for vision models
             message = HumanMessage(
@@ -107,16 +111,13 @@ class DhtiChain(BaseChain):
                     {"type": "image_url", "image_url": {"url": image_url}},
                 ]
             )
-            
+
             # Create messages list with system prompt
-            messages = [
-                SystemMessage(content=system_prompt),
-                message
-            ]
-            
+            messages = [SystemMessage(content=system_prompt), message]
+
             # Invoke the LLM with the multimodal messages
             result = llm.invoke(messages)
-            
+
             # Extract content from result
             if hasattr(result, "content"):
                 return result.content
@@ -128,7 +129,7 @@ class DhtiChain(BaseChain):
     def route_and_process(self, context):
         """Route to appropriate processing based on input type."""
         parsed_data = self.parse_input(context)
-        
+
         if parsed_data["mode"] == "vision":
             return self.process_vision_input(parsed_data)
         else:
@@ -137,10 +138,5 @@ class DhtiChain(BaseChain):
     @property
     @override
     def chain(self):  # type: ignore
-        _chain = (
-            RunnablePassthrough()
-            | get_context
-            | self.route_and_process
-            | get_card
-        )
+        _chain = RunnablePassthrough() | get_context | self.route_and_process | get_card
         return _chain.with_types(input_type=self.input_type)
