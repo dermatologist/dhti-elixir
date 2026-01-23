@@ -1,6 +1,6 @@
 ---
 name: elixir-generator
-description: This skill enables AI agents to generate new DHTI elixir projects from a cookiecutter template. Elixirs provide backend GenAI capabilities as HTTP endpoints hosted by LangServe. The skill guides the agent through environment setup, project scaffolding using cookiecutter, studying reference implementations, and implementing the requested elixir functionality.
+description: This skill enables AI agents to generate new DHTI elixir project. Elixirs provide backend GenAI capabilities as HTTP endpoints hosted by LangServe. The skill guides the agent through environment setup, project scaffolding, studying reference implementations, and implementing the requested elixir functionality.
 ---
 
 ## When to Use This Skill
@@ -12,29 +12,29 @@ Use this skill when you need to:
 - Build AI-powered EMR chatbot functionalities
 
 ## Best Practices
-* Each elixir should focus ONLY on a single function. (e.g. file upload and glycemic recommender should be separate elixirs). If multiple functionalities are needed, create multiple elixirs and orchestrate them.
+* Each elixir should ideally focus ONLY on a single function. (e.g. file upload and glycemic recommender should be separate elixirs). If multiple functionalities are needed, create multiple elixirs and orchestrate them.
 * Reuse existing elixirs where possible instead of creating new ones. You may refer to the list of existing elixirs in the DHTI monorepo: https://github.com/dermatologist/dhti-elixir#available-elixirs
-* Always create a notes/README.md file documenting the purpose, functionality, and usage of the elixir, including additional configuration steps if any as well as other elixirs or services it depends on and needs to be installed alongside.
+* Always create a README.md file in the new package folder documenting the purpose, functionality, and usage of the elixir, including additional configuration steps if any as well as other elixirs or services it depends on and needs to be installed alongside.
 * If a RAG pattern is needed, use redis vector stores. Use neo4j to represent complex graphs. Read src/resources/docker-compose.yml to understand how redis and neo4j containers will be spun up. Prefer using existing elixirs if any and mention the dependency in notes/README.md.
 
 ## Instructions
 
-You are an elixir coding agent working in a fresh development environment.
 
 ### Environment Setup and Project Scaffolding
 
 * **Read and internalize the original user feature request:**
    - Understand the clinical functionality needed.
 
-* **Decide on a simple but unique name** for your backend. (e.g., glycemic, heart_rate, skin_tone etc.). IN THE INSTRUCTIONS BELOW, REPLACE `<<name>>` WITH YOUR CHOSEN NAME.
+* **Decide on a simple but unique name** for your backend. It may be provided by the user (e.g., glycemic, heart_rate, skin_tone etc.). IN THE INSTRUCTIONS BELOW, REPLACE `<<name>>` WITH YOUR CHOSEN NAME.
 
-* **Scaffold a new microfrontend project** using the DHTI cli:
-   ```bash
-   npx dhti-cli elixir init -w workspace -n <<name>>
-   ```
+* **Scaffold a new microfrontend project** :
+
+copy packages/starter from the monorepo to packages/<<name>>.
+YOU WILL USE THIS NEW PACKAGE AS THE BASE DIRECTORY FOR YOUR NEW ELIXIR PROJECT.
+
 
 * **Adapt the starter implementation**
-  - Rename workspace/dhti-elixir/packages/<<name>>/dhti_elixir_starter to workspace/dhti-elixir/packages/<<name>>/dhti_elixir_<<name>>
+  - Rename packages/<<name>>/dhti_elixir_starter to packages/<<name>>/dhti_elixir_<<name>>
   - You have to replace "starter" with your chosen name wherever applicable with dhti_elixir_<<name>> in the generated project.
 
 - **Implementation:**
@@ -105,22 +105,6 @@ Interpret below as the high-level functional requirement for the chain. Your imp
   - Internalize how the agent uses tools if available from the package agent_chat in the monorepo.
   - The original user specification will indicate any available tools to use. If none are indicated, you do not have access to any tools.
 
-### Planning: create a TODO list
-
-Before writing or heavily modifying code, create an **elaborate, structured TODO list** in a notes/todo.md file. This TODO list should:
-
-* Break the work into small, concrete tasks.
-* Cover:
-  * **Environment & setup** (if anything beyond cookiecutter defaults is needed),
-  * **Chain design** (inputs/outputs, internal steps, FHIR interactions),
-  * **Implementation tasks** for chain.py and bootstrap.py,
-  * **Dependency updates** (if new packages are needed),
-  * **Unit testing** tasks,
-  * **Documentation updates** (README),
-  * **Validation and final checks**.
-
-Use clear, actionable items that you can check off logically as you progress.
-
 ### Implementation details
 
 - **Update chain.py:**
@@ -184,15 +168,6 @@ Perform a **final pass** over the project to ensure:
   - README is up to date.
   - The TODO list accurately reflects what has been completed (you may optionally mark completed tasks).
 
-Your final output should include:
-
-- Updated chain.py and bootstrap.py implementing the requested features,
-- Any new/updated tests,
-- Updated pyproject.toml (if dependencies were added),
-- Updated README.md,
-- A clear, up-to-date TODO list (with remaining future improvements, if any).
-
-Now proceed to implement the above steps carefully and methodically.
 
 ## Expected Output
 
@@ -204,9 +179,8 @@ A fully functional DHTI elixir project that:
 - Is well-documented
 - Can be installed into DHTI using the dhti-cli
 
-## Notes
-
-- The generated elixir must be compatible with the DHTI ecosystem
-- FHIR resources and search parameters should follow HL7 FHIR specifications
-- The project should use the dhti-elixir-base library for common functionality
-- All environment-specific configuration should be externalized
+## Best Practices
+* Each elixir should ideally focus ONLY on a single function. (e.g. file upload and glycemic recommender should be separate elixirs). If multiple functionalities are needed, create multiple elixirs and orchestrate them.
+* Reuse existing elixirs where possible instead of creating new ones. You may refer to the list of existing elixirs in the DHTI monorepo: https://github.com/dermatologist/dhti-elixir#available-elixirs
+* Always create a README.md file in the new package folder documenting the purpose, functionality, and usage of the elixir, including additional configuration steps if any as well as other elixirs or services it depends on and needs to be installed alongside.
+* If a RAG pattern is needed, use redis vector stores. Use neo4j to represent complex graphs. Read src/resources/docker-compose.yml to understand how redis and neo4j containers will be spun up. Prefer using existing elixirs if any and mention the dependency in notes/README.md.
