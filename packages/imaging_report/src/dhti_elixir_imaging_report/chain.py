@@ -77,45 +77,53 @@ class DhtiChain(BaseChain):
 
     def process_text_input(self, parsed_data):
         """Process plain text input using simple chat behavior."""
-        text = parsed_data["text"]
-        llm = get_di("imaging_report_main_llm")
-        prompt = get_di("imaging_report_text_prompt")
-        
-        # Create a simple chain for text processing
-        result = (prompt | llm | StrOutputParser()).invoke({"input": text})
-        return result
+        try:
+            text = parsed_data["text"]
+            llm = get_di("imaging_report_main_llm")
+            prompt = get_di("imaging_report_text_prompt")
+            
+            # Create a simple chain for text processing
+            result = (prompt | llm | StrOutputParser()).invoke({"input": text})
+            return result
+        except Exception as e:
+            self.print_log(f"Error in text processing: {e}")
+            return f"Error processing text input: {str(e)}"
 
     def process_vision_input(self, parsed_data):
         """Process vision input with image_url and text using multimodal model."""
-        text = parsed_data["text"]
-        image_url = parsed_data["image_url"]
-        llm = get_di("imaging_report_main_llm")
-        
-        # Get system prompt
-        system_prompt = get_di("imaging_report_system_prompt")
-        
-        # Create multimodal message with image and text
-        # Use HumanMessage with structured content for vision models
-        message = HumanMessage(
-            content=[
-                {"type": "text", "text": text},
-                {"type": "image_url", "image_url": {"url": image_url}},
+        try:
+            text = parsed_data["text"]
+            image_url = parsed_data["image_url"]
+            llm = get_di("imaging_report_main_llm")
+            
+            # Get system prompt
+            system_prompt = get_di("imaging_report_system_prompt")
+            
+            # Create multimodal message with image and text
+            # Use HumanMessage with structured content for vision models
+            message = HumanMessage(
+                content=[
+                    {"type": "text", "text": text},
+                    {"type": "image_url", "image_url": {"url": image_url}},
+                ]
+            )
+            
+            # Create messages list with system prompt
+            messages = [
+                SystemMessage(content=system_prompt),
+                message
             ]
-        )
-        
-        # Create messages list with system prompt
-        messages = [
-            SystemMessage(content=system_prompt),
-            message
-        ]
-        
-        # Invoke the LLM with the multimodal messages
-        result = llm.invoke(messages)
-        
-        # Extract content from result
-        if hasattr(result, "content"):
-            return result.content
-        return str(result)
+            
+            # Invoke the LLM with the multimodal messages
+            result = llm.invoke(messages)
+            
+            # Extract content from result
+            if hasattr(result, "content"):
+                return result.content
+            return str(result)
+        except Exception as e:
+            self.print_log(f"Error in vision processing: {e}")
+            return f"Error processing vision input. Please check the image URL and try again. Error: {str(e)}"
 
     def route_and_process(self, context):
         """Route to appropriate processing based on input type."""
