@@ -36,6 +36,11 @@ def bootstrap():
     )
 
     di["function_llm"] = model
+    
+    di["main_prompt"] = PromptTemplate.from_template(
+        "Summarize the following in 100 words: {input}"
+    )
+
     di["achat_main_prompt"] = PromptTemplate.from_template(
         "You are a medical assistant. "
         "Using the following patient information:{fhir_context}, "
