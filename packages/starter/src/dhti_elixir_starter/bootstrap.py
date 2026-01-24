@@ -26,10 +26,10 @@ def bootstrap():
         llm = ChatOpenAI(model="gpt-4o", temperature=0)
     else:
         llm = FakeListLLM(responses=["I am a fake LLM", "I don't know"])
-    di["starter_main_llm"] = llm
+    di["main_llm"] = llm  # Change this only if you need a module specific LLM
 
     model = init_chat_model(
-        model="nex-agi/deepseek-v3.1-nex-n1:free",
+        model="nvidia/nemotron-nano-9b-v2:free",
         model_provider="openai",
         base_url="https://openrouter.ai/api/v1",
         api_key=os.environ.get("OPENROUTER_API_KEY"),
