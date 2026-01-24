@@ -18,7 +18,7 @@ def bootstrap():
     di["fhir_base_url"] = os.environ.get(
         "FHIR_BASE_URL", "http://backend:8080/openmrs/ws/fhir2/R4"
     )
-    
+
     # Configure vision-capable LLM
     # Check if google api key is set in the environment - gemini supports vision
     if os.environ.get("GOOGLE_API_KEY"):
@@ -29,35 +29,37 @@ def bootstrap():
         llm = ChatOpenAI(model="gpt-4o", temperature=0)
     else:
         # Fallback to fake LLM for testing
-        llm = FakeListLLM(responses=[
-            "This is a simulated vision model response analyzing the image.",
-            "I am a fake vision-capable LLM for testing purposes."
-        ])
-    
-    di["imaging_report_main_llm"] = llm
+        llm = FakeListLLM(
+            responses=[
+                "This is a simulated vision model response analyzing the image.",
+                "I am a fake vision-capable LLM for testing purposes.",
+            ]
+        )
 
     # Optional: Configure function calling LLM
     model = init_chat_model(
-        model="nex-agi/deepseek-v3.1-nex-n1:free",
+        model="nvidia/nemotron-nano-9b-v2:free",
         model_provider="openai",
         base_url="https://openrouter.ai/api/v1",
         api_key=os.environ.get("OPENROUTER_API_KEY"),
     )
 
-    di["imaging_report_function_llm"] = model
-    
+    di["main_llm"] = llm
+
+    di["function_llm"] = model
+
     # System prompt for vision mode
     di["imaging_report_system_prompt"] = (
         "You are an expert medical imaging assistant. "
         "Analyze medical images and provide detailed, accurate reports based on the image content and user's query. "
         "Focus on relevant clinical details and use appropriate medical terminology."
     )
-    
+
     # Text prompt for text-only mode (fallback)
     di["imaging_report_text_prompt"] = PromptTemplate.from_template(
         "You are a medical assistant. Answer the following question: {input}"
     )
-    
+
     # CDS Hook discovery configuration
     di["dhti_elixir_imaging_report_cds_hook_discovery"] = {
         "services": [

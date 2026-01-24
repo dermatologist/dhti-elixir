@@ -83,11 +83,11 @@ class DhtiChain(BaseChain):
         """Process plain text input using simple chat behavior."""
         try:
             text = parsed_data["text"]
-            llm = get_di("imaging_report_main_llm")
+            llm = get_di("main_llm")
             prompt = get_di("imaging_report_text_prompt")
 
             # Create a simple chain for text processing
-            result = (prompt | llm | StrOutputParser()).invoke({"input": text})
+            result = (prompt | llm | StrOutputParser()).invoke({"input": text}) # type: ignore
             return result
         except Exception as e:
             self.print_log(f"Error in text processing: {e}")
@@ -116,7 +116,7 @@ class DhtiChain(BaseChain):
             messages = [SystemMessage(content=system_prompt), message]
 
             # Invoke the LLM with the multimodal messages
-            result = llm.invoke(messages)
+            result = llm.invoke(messages) # type: ignore
 
             # Extract content from result
             if hasattr(result, "content"):
