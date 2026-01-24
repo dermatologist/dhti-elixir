@@ -18,7 +18,7 @@ class DhtiChain(BaseChain):
         # Check if input is a dict (if coming from CDS hook) or string
         query = input
         if isinstance(input, dict):
-             query = input.get("input", "")
+            query = input.get("input", "")
 
         logger.info(f"Retrieving context for query: {query}")
         retriever = get_di("srag_retriever")
@@ -29,8 +29,11 @@ class DhtiChain(BaseChain):
     @override
     def chain(self):  # type: ignore
         _chain = (
-            {"context": self.retrieve_context, "input": RunnablePassthrough() | get_context}
-            | get_di("srag_main_prompt") # type: ignore
+            {
+                "context": RunnablePassthrough() | get_context | self.retrieve_context,
+                "input": RunnablePassthrough() | get_context,
+            }
+            | get_di("srag_main_prompt")  # type: ignore
             | get_di("main_llm")
             | StrOutputParser()
             | get_card
