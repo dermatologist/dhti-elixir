@@ -31,7 +31,7 @@ class DhtiChain(BaseChain):
         _chain = (
             {"context": self.retrieve_context, "input": RunnablePassthrough() | get_context}
             | get_di("srag_main_prompt") # type: ignore
-            | get_di("srag_main_llm")
+            | get_di("main_llm")
             | StrOutputParser()
             | get_card
         )

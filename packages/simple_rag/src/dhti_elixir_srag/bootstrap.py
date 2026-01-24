@@ -37,7 +37,7 @@ def bootstrap():
         embedding_model = FakeEmbeddings(size=1352)
 
     di["embedding_model"] = embedding_model
-    di["srag_main_llm"] = llm
+    di["main_llm"] = llm
 
     model = init_chat_model(
         model="nex-agi/deepseek-v3.1-nex-n1:free",
