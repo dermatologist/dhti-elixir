@@ -18,6 +18,21 @@ def bootstrap():
         "Summarize the following in 100 words: {input}"
     )
     di["main_llm"] = fake_llm
+    
+    # Imaging report specific configuration
+    fake_vision_llm = FakeListLLM(responses=[
+        "This is a simulated vision model response analyzing the image.",
+        "I am a fake vision-capable LLM for testing purposes."
+    ])
+    di["imaging_report_main_llm"] = fake_vision_llm
+    di["imaging_report_system_prompt"] = (
+        "You are an expert medical imaging assistant. "
+        "Analyze medical images and provide detailed, accurate reports."
+    )
+    di["imaging_report_text_prompt"] = PromptTemplate.from_template(
+        "You are a medical assistant. Answer the following question: {input}"
+    )
+    
     di["cds_hook_discovery"] = {
         "services": [
             {

@@ -19,6 +19,7 @@ dhti-cli elixir install -g dermatologist/dhti-elixir -s packages/simple_chat
 
 - [DHTI Simple Chat Elixir](packages/simple_chat/README.md): A simple chat interface for DHTI using LLMs.
 - [DHTI Agent Chat Elixir](packages/agent_chat/README.md): An agent-based chat interface for DHTI using LLMs.
+- [DHTI Imaging Report Elixir](packages/imaging_report/README.md): A vision-capable elixir for analyzing medical images and generating reports using multimodal AI models.
 - [File Uploader Elixir](packages/upload_file/README.md): An elixir to upload files to vectorstore.
 - [DHTI Simple RAG Elixir](packages/simple_rag/README.md): A simple RAG elixir that reads from vectorstore.
 

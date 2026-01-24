@@ -23,3 +23,9 @@ def simple_chain():
 def agent_chain():
     from packages.agent_chat.src.dhti_elixir_achat.chain import DhtiChain
     return DhtiChain().chain
+
+
+@pytest.fixture
+def imaging_report_chain():
+    from packages.imaging_report.src.dhti_elixir_imaging_report.chain import DhtiChain
+    return DhtiChain().chain

@@ -1,18 +1,19 @@
 import logging
 from typing import Any
-from typing_extensions import override
-from fhiry import FlattenFhir
-from dhti_elixir_base import BaseChain, get_di, BaseAgent
+
+from dhti_elixir_base import BaseAgent, BaseChain, get_di
 from dhti_elixir_base.cds_hook.generate_cards import get_card
 from dhti_elixir_base.cds_hook.request_parser import get_context
 from dhti_elixir_base.fhir.fhir_search import DhtiFhirSearch
+from fhiry import FlattenFhir
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import (
-    RunnablePassthrough,
     RunnableBranch,
     RunnableLambda,
     RunnableParallel,
+    RunnablePassthrough,
 )
+from typing_extensions import override
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -103,7 +104,7 @@ class DhtiChain(BaseChain):
         _chain = (
             _context
             | get_di("achat_main_prompt")  # type: ignore
-            | get_di("achat_main_llm")  # type: ignore
+            | get_di("main_llm")  # type: ignore
             | StrOutputParser()
             | get_card
         )

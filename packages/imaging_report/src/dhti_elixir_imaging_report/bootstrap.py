@@ -18,16 +18,25 @@ def bootstrap():
     di["fhir_base_url"] = os.environ.get(
         "FHIR_BASE_URL", "http://backend:8080/openmrs/ws/fhir2/R4"
     )
-    # Check if google api key is set in the environment
+
+    # Configure vision-capable LLM
+    # Check if google api key is set in the environment - gemini supports vision
     if os.environ.get("GOOGLE_API_KEY"):
-        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-    # Check if openai api key is set in the environment
+        # Use Gemini Pro Vision or Flash Vision model
+        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-exp")
+    # Check if openai api key is set in the environment - gpt-4o supports vision
     elif os.environ.get("OPENAI_API_KEY"):
         llm = ChatOpenAI(model="gpt-4o", temperature=0)
     else:
-        llm = FakeListLLM(responses=["I am a fake LLM", "I don't know"])
-    di["main_llm"] = llm  # Change this only if you need a module specific LLM
+        # Fallback to fake LLM for testing
+        llm = FakeListLLM(
+            responses=[
+                "This is a simulated vision model response analyzing the image.",
+                "I am a fake vision-capable LLM for testing purposes.",
+            ]
+        )
 
+    # Optional: Configure function calling LLM
     model = init_chat_model(
         model="nvidia/nemotron-nano-9b-v2:free",
         model_provider="openai",
@@ -35,23 +44,30 @@ def bootstrap():
         api_key=os.environ.get("OPENROUTER_API_KEY"),
     )
 
+    di["main_llm"] = llm
+
     di["function_llm"] = model
-    di["main_prompt"] = PromptTemplate.from_template(
-        "Summarize the following in 100 words: {input}"
+
+    # System prompt for vision mode
+    di["imaging_report_system_prompt"] = (
+        "You are an expert medical imaging assistant. "
+        "Analyze medical images and provide detailed, accurate reports based on the image content and user's query. "
+        "Focus on relevant clinical details and use appropriate medical terminology."
     )
-    di["starter_main_prompt"] = PromptTemplate.from_template(
-        "You are a medical assistant. "
-        "Using the following patient information:{fhir_context}, "
-        "and a response from a medical knowledge agent: {agent_response}, "
-        "answer the question: {query} briefly and accurately."
+
+    # Text prompt for text-only mode (fallback)
+    di["imaging_report_text_prompt"] = PromptTemplate.from_template(
+        "You are a medical assistant. Answer the following question: {input}"
     )
-    di["dhti_elixir_starter_cds_hook_discovery"] = {
+
+    # CDS Hook discovery configuration
+    di["dhti_elixir_imaging_report_cds_hook_discovery"] = {
         "services": [
             {
                 "id": "dhti-service",
                 "hook": "order-select",
-                "title": "MyOrg Order Assistant",
-                "description": "Provides suggestions and actions for selected draft orders, including handling CommunicationRequest resources.",
+                "title": "Medical Imaging Report Assistant",
+                "description": "Analyzes medical images and generates reports using vision-capable AI models.",
                 "prefetch": {
                     "patient": "Patient/{{context.patientId}}",
                     "draftOrders": "Bundle?patient={{context.patientId}}&status=draft",
@@ -60,13 +76,15 @@ def bootstrap():
                     "launch",
                     "patient/Patient.read",
                     "user/Practitioner.read",
-                    "patient/CommunicationRequest.read",
+                    "patient/ImagingStudy.read",
+                    "patient/DiagnosticReport.read",
                 ],
                 "metadata": {
-                    "author": "MyOrg CDS Team",
+                    "author": "DHTI Imaging Team",
                     "version": "1.0.0",
                     "supportedResources": [
-                        "CommunicationRequest",
+                        "ImagingStudy",
+                        "DiagnosticReport",
                     ],
                 },
             }

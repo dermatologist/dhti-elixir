@@ -48,7 +48,7 @@ class DhtiChain(BaseChain):
             RunnablePassthrough()
             | get_context
             | self.fhir_everything
-            | get_di("schat_main_llm")  # type: ignore
+            | get_di("main_llm")  # type: ignore
             | StrOutputParser()
             | get_card
         )
