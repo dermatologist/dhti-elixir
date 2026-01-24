@@ -34,12 +34,6 @@ def bootstrap():
     di["main_llm"] = llm
     di["upload_chunk_size"] = 100
     di["upload_chunk_overlap"] = 20
-    model = init_chat_model(
-        model="nex-agi/deepseek-v3.1-nex-n1:free",
-        model_provider="openai",
-        base_url="https://openrouter.ai/api/v1",
-        api_key=os.environ.get("OPENROUTER_API_KEY"),
-    )
 
     index_schema = {
         "numeric": [{"name": "year", "no_index": False, "sortable": False}],

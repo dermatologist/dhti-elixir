@@ -37,12 +37,15 @@ def bootstrap():
         )
 
     # Optional: Configure function calling LLM
-    model = init_chat_model(
-        model="nvidia/nemotron-nano-9b-v2:free",
-        model_provider="openai",
-        base_url="https://openrouter.ai/api/v1",
-        api_key=os.environ.get("OPENROUTER_API_KEY"),
-    )
+    try:
+        model = init_chat_model(
+            model="nex-agi/deepseek-v3.1-nex-n1:free",
+            model_provider="openai",
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.environ.get("OPENROUTER_API_KEY"),
+        )
+    except Exception:
+        model = FakeListLLM(responses=["I am a function calling fake LLM."])
 
     di["main_llm"] = llm
 
